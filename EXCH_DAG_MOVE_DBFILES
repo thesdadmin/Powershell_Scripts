@@ -1,0 +1,43 @@
+##########################################################################
+# Migrate Exchange Database log files for Databases in Exchange DAG ######
+# 
+#Log the script actions
+Start-Transcript -Path C:\script_log\ExchangeDB_LOGMOVE.txt
+#import Exchange snap-in
+Add-PSSnapin Microsoft.Exchange*
+Start-Sleep -Seconds 5
+#define databases servers for maintenance
+$db1="MMC-MGMTDB-01"
+$db2="MMC-PHYSDB-01"
+$db3="MMC-USERDB_02"
+$copyserver="MAILSERV1"
+$dag1=$db1+"\"+$copyserver
+$dag2=$db2+"\"+$copyserver
+$dag3=$db3+"\"+$copyserver
+$db1_log="F:\"+ $db1 +"_LOGS"
+$db2_log="F:\"+$db2+"_LOGS"
+$db3_log="F:\"+$db3+"_LOGS"
+# Remove DB copies in Exchange DAG
+Remove-MailboxDatabaseCopy -Identity $dag1 -Verbose -Confirm:$false -WhatIf 
+Remove-MailboxDatabaseCopy -identity $dag2 -Verbose -Confirm:$false -WhatIf 
+Remove-MailboxDatabaseCopy -identity $dag3 -Verbose -Confirm:$false -WhatIf 
+#Dismount Exchange DB
+Dismount-Database -Identity $db1 -Verbose -WhatIf
+Dismount-Database -Identity $db2 -Verbose -WhatIf
+Dismount-Database -Identity $db3 -Verbose -WhatIf
+#Change Log Folder path
+Move-DatabasePath $db1 -LogFolderPath $db1_log -Verbose -WhatIf
+Move-DatabasePath $db2 -LogFolderPath $db2_log -Verbose -WhatIf
+Move-DatabasePath $db3 -LogFolderPath $db3_log -Verbose -Whatif
+#Mount The Databases in Exchange
+Mount-Database -Identity $db1 -Verbose -WhatIf
+Mount-Database -Identity $db2 -Verbose -WhatIf
+Mount-Database -Identity $db3 -Verbose -WhatIf
+#Create Exchange DB Copies
+Add-MailboxDatabaseCopy -id $db1 -MailboxServer $copyserver -SeedingPostponed -ActivationPreference 1 -Verbose -WhatIf
+Add-MailboxDatabaseCopy -id $db2 -MailboxServer $copyserver -SeedingPostponed -ActivationPreference 1 -Verbose -Whatif
+Add-MailboxDatabaseCopy -id $db3 -MailboxServer $copyserver -SeedingPostponed -ActivationPreference 1 -verbose -whatif
+#Seed Databases
+Update-MailboxDatabaseCopy -Identity $dag1 -BeginSeed -DeleteExistingFiles -verbose -WhatIf
+Update-MailboxDatabaseCopy -Identity $dag2 -BeginSeed -DeleteExistingFiles -verbose -WhatIf
+Update-MailboxDatabaseCopy -Identity $dag3 -BeginSeed -DeleteExistingFiles -Verbose -WhatIf
