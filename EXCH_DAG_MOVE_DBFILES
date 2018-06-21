@@ -18,26 +18,34 @@ $db1_log="F:\"+ $db1 +"_LOGS"
 $db2_log="F:\"+$db2+"_LOGS"
 $db3_log="F:\"+$db3+"_LOGS"
 # Remove DB copies in Exchange DAG
-Remove-MailboxDatabaseCopy -Identity $dag1 -Verbose -Confirm:$false -WhatIf 
-Remove-MailboxDatabaseCopy -identity $dag2 -Verbose -Confirm:$false -WhatIf 
-Remove-MailboxDatabaseCopy -identity $dag3 -Verbose -Confirm:$false -WhatIf 
+Remove-MailboxDatabaseCopy -Identity $dag1 -Verbose -Confirm:$false 
+Remove-MailboxDatabaseCopy -identity $dag2 -Verbose -Confirm:$false  
+Remove-MailboxDatabaseCopy -identity $dag3 -Verbose -Confirm:$false  
 #Dismount Exchange DB
-Dismount-Database -Identity $db1 -Verbose -WhatIf
-Dismount-Database -Identity $db2 -Verbose -WhatIf
-Dismount-Database -Identity $db3 -Verbose -WhatIf
+Dismount-Database -Identity $db1 -Verbose -confirm:$false
+Dismount-Database -Identity $db2 -Verbose -confirm:$false
+Dismount-Database -Identity $db3 -Verbose -confirm:$false
 #Change Log Folder path
-Move-DatabasePath $db1 -LogFolderPath $db1_log -Verbose -WhatIf
-Move-DatabasePath $db2 -LogFolderPath $db2_log -Verbose -WhatIf
-Move-DatabasePath $db3 -LogFolderPath $db3_log -Verbose -Whatif
+Move-DatabasePath $db1 -LogFolderPath $db1_log -Verbose -confirm:$false
+Move-DatabasePath $db2 -LogFolderPath $db2_log -Verbose -confirm:$false
+Move-DatabasePath $db3 -LogFolderPath $db3_log -Verbose -confirm:$false
 #Mount The Databases in Exchange
-Mount-Database -Identity $db1 -Verbose -WhatIf
-Mount-Database -Identity $db2 -Verbose -WhatIf
-Mount-Database -Identity $db3 -Verbose -WhatIf
+Mount-Database -Identity $db1 -Verbose 
+Mount-Database -Identity $db2 -Verbose 
+Mount-Database -Identity $db3 -Verbose 
+Invoke-command -ComputerName $copyserver,mailserv2 -ScriptBlock {Restart-service MSExchangeFastSearch}
 #Create Exchange DB Copies
-Add-MailboxDatabaseCopy -id $db1 -MailboxServer $copyserver -SeedingPostponed -ActivationPreference 1 -Verbose -WhatIf
-Add-MailboxDatabaseCopy -id $db2 -MailboxServer $copyserver -SeedingPostponed -ActivationPreference 1 -Verbose -Whatif
-Add-MailboxDatabaseCopy -id $db3 -MailboxServer $copyserver -SeedingPostponed -ActivationPreference 1 -verbose -whatif
+Add-MailboxDatabaseCopy -id $db1 -MailboxServer $copyserver -SeedingPostponed -ActivationPreference 1 -Verbose 
+Add-MailboxDatabaseCopy -id $db2 -MailboxServer $copyserver -SeedingPostponed -ActivationPreference 2 -Verbose 
+Add-MailboxDatabaseCopy -id $db3 -MailboxServer $copyserver -SeedingPostponed -ActivationPreference 2 -verbose 
+
+Suspend-mailboxDatabaseCopy -id $dag1 -confirm:$false
+Suspend-mailboxDatabaseCopy -id $dag2 -confirm:$false
+Suspend-mailboxDatabaseCopy -id $dag3 -confirm:$false
 #Seed Databases
-Update-MailboxDatabaseCopy -Identity $dag1 -BeginSeed -DeleteExistingFiles -verbose -WhatIf
-Update-MailboxDatabaseCopy -Identity $dag2 -BeginSeed -DeleteExistingFiles -verbose -WhatIf
-Update-MailboxDatabaseCopy -Identity $dag3 -BeginSeed -DeleteExistingFiles -Verbose -WhatIf
+
+Update-MailboxDatabaseCopy -Identity $dag1 -BeginSeed -DeleteExistingFiles -verbose -confirm:$false
+Update-MailboxDatabaseCopy -Identity $dag2 -BeginSeed -DeleteExistingFiles -verbose -Confirm:$false
+Update-MailboxDatabaseCopy -Identity $dag3 -BeginSeed -DeleteExistingFiles -Verbose -Confirm:$false
+
+
