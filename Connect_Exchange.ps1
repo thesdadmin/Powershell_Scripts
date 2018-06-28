@@ -1,3 +1,5 @@
+### If you administer Exchange on-premise, this is a handy function to have in your user profile or saved in a local path.
+
 Function Connect-Exchange {
  
     param(
