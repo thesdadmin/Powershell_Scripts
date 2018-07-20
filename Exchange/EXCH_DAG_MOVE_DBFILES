@@ -7,9 +7,9 @@ Start-Transcript -Path C:\script_log\ExchangeDB_LOGMOVE.txt
 Add-PSSnapin Microsoft.Exchange*
 Start-Sleep -Seconds 5
 #define databases servers for maintenance
-$db1="MMC-MGMTDB-01"
-$db2="MMC-PHYSDB-01"
-$db3="MMC-USERDB_02"
+$db1="SVDB-01"
+$db2="SV-01"
+$db3="SV_02"
 $copyserver="MAILSERV1"
 $dag1=$db1+"\"+$copyserver
 $dag2=$db2+"\"+$copyserver
