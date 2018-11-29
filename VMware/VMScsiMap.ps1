@@ -1,4 +1,5 @@
 ##Get VMware VM SCSI controller and Virtual Harddisk mapping.
+##Based on code from https://code.vmware.com/forums/2530/vsphere-powercli#578118
 Function Get-VMSCSIMap {
     param(
     [parameter(Mandatory=$true,
