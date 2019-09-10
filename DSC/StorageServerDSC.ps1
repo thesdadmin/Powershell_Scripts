@@ -44,8 +44,8 @@ configuration StorageServer {
                 Type = 'Directory'
                 DestinationPath = 'E:\iSCSIVirtualDisks'
                 Ensure = "Present"
-            
-
+            }   
+                
         iSCSIVirtualDisk iSCSIClusterVDisk01
             {
                 Ensure      = 'Present'
