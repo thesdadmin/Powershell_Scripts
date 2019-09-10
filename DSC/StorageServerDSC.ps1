@@ -19,7 +19,9 @@ configuration StorageServer {
         }
         Script StorageVolume {
             SetScript = {
-                Get-VirtualDisk –FriendlyName VirtualDisk1 | Get-Disk | Initialize-Disk –Passthru | New-Partition –AssignDriveLetter -driveLetter E –UseMaximumSize | Format-Volume
+             $storagedisk=Get-VirtualDisk –FriendlyName VirtualDisk1| Get-Disk 
+             Initialize-Disk -Number $storagedisk.number –Passthru | New-Partition –AssignDriveLetter -DriveLetter E –UseMaximumSize 
+             Format-Volume -DriveLetter E -NewFileSystemLabel "StorageDisk" -FileSystem NTFS
             }
             TestScript = {Get-virtualdisk -friendlyname VirtualDisk1 | Get-Disk|Get-partition|Get-Volume -driveLetter E }
             GetScript  = { @{Result =(Get-Volume -driveLetter E)}}
