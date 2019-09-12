@@ -1,4 +1,5 @@
 ##Script to configure ENV variables for GOVC
+Set-Location ~\Documents\govc_win
 $GOVC_URL=Read-Host "VCenter URL"
 $GOVC_USERNAME=Read-Host "VCenter Login UN"
 $GOVC_PASSWORD= Read-Host "Vcenter Login Pass"
