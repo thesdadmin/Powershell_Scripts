@@ -1,0 +1,11 @@
+<#
+Attach new ISCSI server to VMHOST and create new datastore.
+#>
+
+$VMhost | Get-VMHostHba -Type iScsi | New-IScsiHbaTarget -Address
+$vmhost| Get-vmhoststorage -rescanallhba -rescanvmfs
+
+$vmhosts | ForEach-Object{Get-VMHostHba -Type IScsi -vmhost $_ | New-IScsiHbaTarget -Address 10.7.99.113}
+
+$vmhosts | ForEach-Object{Get-VMHostStorage -Refresh -RescanAllHba -RescanVmfs -VMHost $_ -Verbose}
+New-datastore -vmhost VMHOST -Name "SOMESTORAGE" -path naa.SOMEPATH -VMFS
